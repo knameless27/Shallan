@@ -1,0 +1,16 @@
+{
+    "name": "shallan",
+    "version": "0.0.0",
+    "scripts": {
+        "dev": "nodemon main.js"
+    },
+    "dependencies": {
+        "dotenv": "^16.0.3",
+        "express": "^4.18.2",
+        "morgan": "^1.10.0",
+        "mysql2": "^3.2.0"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.21"
+    }
+}
