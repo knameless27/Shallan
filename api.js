@@ -1,7 +1,9 @@
 const { Router } = require('express')
 const router = Router()
-const books = require('./controllers/books');
+const UsersController = require('./controllers/UsersController');
+const BooksController = require('./controllers/BooksController');
 
-router.get("/", books.index);
+router.all("/books", BooksController.index);
+router.get("/xd", UsersController.findUsers);
 
 module.exports = router
