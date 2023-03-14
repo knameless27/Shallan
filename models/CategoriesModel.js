@@ -1,17 +1,8 @@
 const seq = require("../db");
 const { DataTypes } = require("sequelize");
 
-const Users = seq.define("Users", {
+const Categories = seq.define("Categories", {
   name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  email: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-  },
-  password: {
     type: DataTypes.STRING,
     allowNull: false,
   },
@@ -21,4 +12,4 @@ const Users = seq.define("Users", {
   },
 },{ paranoid: true, timestamps: true });
 
-module.exports = { Users };
+module.exports = { Categories };

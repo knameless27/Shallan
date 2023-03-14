@@ -1,24 +1,35 @@
 const seq = require("../db");
 const { DataTypes } = require("sequelize");
 
-const Libro = seq.define("Libro", {
-  nombre: {
+const Books = seq.define("Books", {
+  name: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  tipo_libro_id: {
+  image: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
   },
-  autor: {
+  author: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  pages: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  autor: {
+  publication_date: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  stock: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-});
+  state: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+  },
+},{ paranoid: true, timestamps: true });
 
-module.exports = Libro;
+module.exports = {Books};
