@@ -1,4 +1,4 @@
-const Sequelize = require("sequelize");
+const { Sequelize } = require("sequelize");
 
 const sequelize = new Sequelize(
   "shallan",
@@ -7,11 +7,7 @@ const sequelize = new Sequelize(
   {
     host: process.env.DATABASE_HOST,
     dialect: "mysql",
-    dialectOptions: {
-      ssl: {
-        rejectUnauthorized: true,
-      },
-     },
+    dialectOptions: {},
     pool: {
       max: 5,
       min: 0,
@@ -21,5 +17,14 @@ const sequelize = new Sequelize(
   }
 );
 
-sequelize.sync()
-module.exports = sequelize
+
+sequelize
+  .sync({ force: true })
+  .then(() => {
+    console.log("Tables and relations created successfully!");
+  })
+  .catch((error) => {
+    console.error("Error occurred while creating tables and relations:", error);
+  });
+
+module.exports = sequelize;

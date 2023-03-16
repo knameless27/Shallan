@@ -1,7 +1,8 @@
-const seq = require("../db");
-const { DataTypes } = require("sequelize");
+const { Model, DataTypes } = require("sequelize");
+const sequelize = require("../db");
 
-const Categories = seq.define("Categories", {
+class Categories extends Model {}
+Categories.init({
   name: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -10,6 +11,6 @@ const Categories = seq.define("Categories", {
     type: DataTypes.BOOLEAN,
     allowNull: false,
   },
-},{ paranoid: true, timestamps: true });
+}, { sequelize, modelName: "Categories", paranoid: true, timestamps: true });
 
 module.exports = { Categories };
