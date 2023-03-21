@@ -1,34 +1,15 @@
-const { Books } = require("../models/BooksModel");
-const { Categories } = require("../models/CategoriesModel");
+const { Roles } = require("../models/RolModel");
 
 async function all(req, res) {
   switch (req.method) {
     case "POST":
       try {
-        const categoria = await Books.findByPk(req.body.categoryId);
-
-        if (!categoria) {
-          res.status(400).send({
-            message: "Esta categoria no existe!",
-            status: "Error",
-          });
-        }
-
-        const nuevaCategoria = await Books.create({
+        const nuevaCategoria = await Roles.create({
           name: req.body.name,
-          image: req.body.image,
           state: true,
-          author: req.body.author,
-          pages: req.body.pages,
-          publication_date: req.body.publication_date,
-          stock: req.body.stock,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          CategoryId: req.body.categoryId,
         });
-
         res.status(200).send({
-          message: "Libro agregado correctamente",
+          message: "Rol agregado correctamente",
           data: nuevaCategoria.toJSON(),
           status: "Success",
         });
@@ -44,7 +25,7 @@ async function all(req, res) {
     case "GET":
       if (req.params.id) {
         try {
-          const categorias = await Books.findByPk(req.params.id);
+          const categorias = await Roles.findByPk(req.params.id);
 
           res.status(200).send({
             data: categorias,
@@ -52,14 +33,14 @@ async function all(req, res) {
           });
         } catch (error) {
           res.status(404).send({
-            message: "Books no encontrado",
+            message: "Roles no encontrado",
             error: error,
             status: "Error",
           });
         }
       }
       try {
-        const categorias = await Books.findAll();
+        const categorias = await Roles.findAll();
 
         res.status(200).send({
           data: categorias,
@@ -67,7 +48,7 @@ async function all(req, res) {
         });
       } catch (error) {
         res.status(404).send({
-          message: "Books no encontrados",
+          message: "Roles no encontrados",
           error: error,
           status: "Error",
         });
@@ -76,14 +57,14 @@ async function all(req, res) {
 
     case "PUT":
       try {
-        const catAntigua = await Books.findByPk(req.params.id);
+        const catAntigua = await Roles.findByPk(req.params.id);
         if (catAntigua === null) {
           res.status(400).send({
-            message: "Libros no encontrado!",
+            message: "Rol no encontrado!",
             status: "Error",
           });
         }
-        await Books.update(
+        await Roles.update(
           {
             name: req.body.name,
             updatedAd: new Date(),
@@ -96,10 +77,10 @@ async function all(req, res) {
           }
         );
 
-        const data = await Books.findByPk(req.params.id);
+        const data = await Roles.findByPk(req.params.id);
 
         res.status(200).send({
-          message: "Libros editado correctamente",
+          message: "Rol editado correctamente",
           data: data.toJSON(),
           status: "Success",
         });
@@ -114,21 +95,23 @@ async function all(req, res) {
 
     case "DELETE":
       try {
-        const catAntigua = await Books.findByPk(req.params.id);
+        const catAntigua = await Roles.findByPk(req.params.id);
         if (catAntigua === null) {
           res.status(400).send({
-            message: "Libros no encontrado!",
+            message: "Rol no encontrado!",
             status: "Error",
           });
         }
-        await Books.destroy({
-          where: {
-            id: req.params.id,
-          },
-        });
+        await Roles.destroy(
+          {
+            where: {
+              id: req.params.id,
+            },
+          }
+        );
 
         res.status(200).send({
-          message: "Libros eliminado correctamente",
+          message: "Rol eliminado correctamente",
           status: "Success",
         });
       } catch (error) {

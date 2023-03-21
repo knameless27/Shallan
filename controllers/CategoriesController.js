@@ -1,24 +1,6 @@
 const { Categories } = require("../models/CategoriesModel");
 
 async function all(req, res) {
-  if (req.method == 'GET' && req.params.id) {
-    try {
-        const categorias = await Categories.findByPk(req.params.id, {
-          attributes: { exclude: ["BookId"] },
-        });
-
-        res.status(200).send({
-          data: categorias,
-          status: "Success",
-        });
-      } catch (error) {
-        res.status(404).send({
-          message: "Categorias no encontradas",
-          error: error,
-          status: "Error",
-        });
-      }
-  }
   switch (req.method) {
     case "POST":
       try {
@@ -41,10 +23,24 @@ async function all(req, res) {
       break;
 
     case "GET":
+      if (req.params.id) {
+        try {
+          const categorias = await Categories.findByPk(req.params.id);
+
+          res.status(200).send({
+            data: categorias,
+            status: "Success",
+          });
+        } catch (error) {
+          res.status(404).send({
+            message: "Categorias no encontradas",
+            error: error,
+            status: "Error",
+          });
+        }
+      }
       try {
-        const categorias = await Categories.findAll({
-          attributes: { exclude: ["BookId"] },
-        });
+        const categorias = await Categories.findAll();
 
         res.status(200).send({
           data: categorias,
@@ -61,16 +57,14 @@ async function all(req, res) {
 
     case "PUT":
       try {
-        const catAntigua = await Categories.findByPk(req.params.id, {
-            attributes: { exclude: ["BookId"] },
-          });
+        const catAntigua = await Categories.findByPk(req.params.id);
         if (catAntigua === null) {
           res.status(400).send({
             message: "Categoria no encontrada!",
             status: "Error",
           });
         }
-        const nuevaCategoria = await Categories.update(
+        await Categories.update(
           {
             name: req.body.name,
             updatedAd: new Date(),
@@ -78,18 +72,16 @@ async function all(req, res) {
           },
           {
             where: {
-              name: req.body.name,
-              status: 1,
+              id: req.params.id,
             },
-          },
-          {
-            attributes: { exclude: ["BookId"] },
           }
         );
 
+        const data = await Categories.findByPk(req.params.id);
+
         res.status(200).send({
-          message: "Categoria agregada correctamente",
-          data: nuevaCategoria,
+          message: "Categoria editada correctamente",
+          data: data.toJSON(),
           status: "Success",
         });
       } catch (error) {
@@ -103,19 +95,29 @@ async function all(req, res) {
 
     case "DELETE":
       try {
-        const nuevaCategoria = await Categories.create({
-          name: req.body.name,
-          status: 1,
-        });
+        const catAntigua = await Categories.findByPk(req.params.id);
+        if (catAntigua === null) {
+          res.status(400).send({
+            message: "Categoria no encontrada!",
+            status: "Error",
+          });
+        }
+        await Categories.destroy(
+          {
+            where: {
+              id: req.params.id,
+            },
+          }
+        );
 
-        res.status(400).send({
-          message: "Categoria agregada correctamente",
-          data: nuevaCategoria.toJSON(),
+        res.status(200).send({
+          message: "Categoria eliminada correctamente",
           status: "Success",
         });
       } catch (error) {
         res.status(400).send({
           message: "Revise los datos",
+          error: error,
           status: "Error",
         });
       }
