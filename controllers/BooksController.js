@@ -5,7 +5,7 @@ async function all(req, res) {
   switch (req.method) {
     case "POST":
       try {
-        const categoria = await Books.findByPk(req.body.categoryId);
+        const categoria = await Categories.findByPk(req.body.categoryId);
 
         if (!categoria) {
           res.status(400).send({
@@ -76,18 +76,24 @@ async function all(req, res) {
 
     case "PUT":
       try {
-        const catAntigua = await Books.findByPk(req.params.id);
+        const catAntigua = await Categories.findByPk(req.body.categoryId);
         if (catAntigua === null) {
           res.status(400).send({
-            message: "Libros no encontrado!",
+            message: "Categoria no encontrada!",
             status: "Error",
           });
         }
         await Books.update(
           {
             name: req.body.name,
-            updatedAd: new Date(),
-            status: req.body.status,
+            image: req.body.image,
+            state: req.body.state,
+            author: req.body.author,
+            pages: req.body.pages,
+            publication_date: req.body.publication_date,
+            stock: req.body.stock,
+            updatedAt: new Date(),
+            CategoryId: req.body.categoryId,
           },
           {
             where: {
@@ -99,7 +105,7 @@ async function all(req, res) {
         const data = await Books.findByPk(req.params.id);
 
         res.status(200).send({
-          message: "Libros editado correctamente",
+          message: "Libro editado correctamente",
           data: data.toJSON(),
           status: "Success",
         });
@@ -117,7 +123,7 @@ async function all(req, res) {
         const catAntigua = await Books.findByPk(req.params.id);
         if (catAntigua === null) {
           res.status(400).send({
-            message: "Libros no encontrado!",
+            message: "Libro no encontrado!",
             status: "Error",
           });
         }
@@ -128,7 +134,7 @@ async function all(req, res) {
         });
 
         res.status(200).send({
-          message: "Libros eliminado correctamente",
+          message: "Libro eliminado correctamente",
           status: "Success",
         });
       } catch (error) {

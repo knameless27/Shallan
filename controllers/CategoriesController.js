@@ -57,13 +57,6 @@ async function all(req, res) {
 
     case "PUT":
       try {
-        const catAntigua = await Categories.findByPk(req.params.id);
-        if (catAntigua === null) {
-          res.status(400).send({
-            message: "Categoria no encontrada!",
-            status: "Error",
-          });
-        }
         await Categories.update(
           {
             name: req.body.name,
@@ -95,13 +88,6 @@ async function all(req, res) {
 
     case "DELETE":
       try {
-        const catAntigua = await Categories.findByPk(req.params.id);
-        if (catAntigua === null) {
-          res.status(400).send({
-            message: "Categoria no encontrada!",
-            status: "Error",
-          });
-        }
         await Categories.destroy(
           {
             where: {

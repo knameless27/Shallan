@@ -57,13 +57,6 @@ async function all(req, res) {
 
     case "PUT":
       try {
-        const catAntigua = await Roles.findByPk(req.params.id);
-        if (catAntigua === null) {
-          res.status(400).send({
-            message: "Rol no encontrado!",
-            status: "Error",
-          });
-        }
         await Roles.update(
           {
             name: req.body.name,

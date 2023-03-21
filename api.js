@@ -11,7 +11,7 @@ router.all('/roles', RolesController.all);
 router.all('/roles/:id', RolesController.all);
 router.all("/books", BooksController.all);
 router.all("/books/:id", BooksController.all);
-router.get("/users", UsersController.findUsers);
-router.get("/users/:id", UsersController.findUsers);
+router.all("/users", UsersController.all);
+router.all("/users/:id", UsersController.all);
 
 module.exports = router
