@@ -1,5 +1,6 @@
 const { Books } = require("../models/BooksModel");
 const { Categories } = require("../models/CategoriesModel");
+const { User_Books } = require("../relationships");
 
 async function all(req, res) {
   switch (req.method) {
@@ -155,6 +156,69 @@ async function all(req, res) {
   }
 }
 
+async function saveBook(req, res) {
+  try {
+    const libro = await Books.findByPk(req.body.bookId);
+    const usuario = await Books.findByPk(req.body.userId);
+
+    if (!libro || !usuario) {
+      res.status(400).send({
+        message: "Revise los datos!",
+        status: "Error",
+      });
+    }
+
+    const reservarLibro = await User_Books.create({
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      BookId: req.body.bookId,
+      UserId: req.body.userId,
+    });
+
+    res.status(200).send({
+      message: "Libro agregado correctamente",
+      data: reservarLibro.toJSON(),
+      status: "Success",
+    });
+  } catch (error) {
+    res.status(400).send({
+      message: "Revise los datos",
+      error: error,
+      status: "Error",
+    });
+  }
+}
+
+async function removeReservation(req, res) {
+  try {
+    const reserva = await User_Books.findByPk(req.params.id);
+    if (reserva === null) {
+      res.status(400).send({
+        message: "Reserva no encontrada!",
+        status: "Error",
+      });
+    }
+    await User_Books.destroy({
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    res.status(200).send({
+      message: "Reserva eliminada correctamente",
+      status: "Success",
+    });
+  } catch (error) {
+    res.status(400).send({
+      message: "Revise los datos",
+      error: error,
+      status: "Error",
+    });
+  }
+}
+
 module.exports = {
   all,
+  saveBook,
+  removeReservation,
 };

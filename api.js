@@ -6,12 +6,14 @@ const CategoriesController = require('./controllers/CategoriesController');
 const RolesController = require('./controllers/RolesController');
 
 router.all('/categories', CategoriesController.all);
-router.all('/categories/:id', CategoriesController.all);
+router.get('/categories/:id', CategoriesController.all);
 router.all('/roles', RolesController.all);
-router.all('/roles/:id', RolesController.all);
+router.get('/roles/:id', RolesController.all);
 router.all("/books", BooksController.all);
-router.all("/books/:id", BooksController.all);
+router.get("/books/:id", BooksController.all);
+router.post("/books/save", BooksController.saveBook);
+router.get("/books/remove_reservation/:id", BooksController.removeReservation);
 router.all("/users", UsersController.all);
-router.all("/users/:id", UsersController.all);
+router.get("/users/:id", UsersController.all);
 
 module.exports = router

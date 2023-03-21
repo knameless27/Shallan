@@ -1,11 +1,18 @@
+const { DataTypes } = require("sequelize");
 const sequelize = require("./db")
 const { Books } = require("./models/BooksModel");
 const { Categories } = require("./models/CategoriesModel");
 const { Roles } = require("./models/RolModel");
 const { Users } = require("./models/UsersModel");
 
+const User_Books = sequelize.define('User_Books', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+      },
+},{paranoid: true, timestamps: true});
 function init() {
-  const User_Books = sequelize.define('User_Books', {},{paranoid: true, timestamps: true});
   Categories.hasMany(Books);
   Books.belongsTo(Categories);
   Roles.hasMany(Users);
@@ -14,4 +21,7 @@ function init() {
   Users.belongsToMany(Books, { through: User_Books });
 }
 
-module.exports = { init };
+module.exports = {
+    init,
+    User_Books
+ };

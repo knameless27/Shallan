@@ -1,6 +1,7 @@
 {
     "name": "shallan",
-    "version": "0.0.0",
+    "version": "1.0.0",
+    "description": "",
     "scripts": {
         "dev": "nodemon main.js"
     },
