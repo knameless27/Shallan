@@ -4,8 +4,21 @@ const UsersController = require('./controllers/UsersController');
 const BooksController = require('./controllers/BooksController');
 const CategoriesController = require('./controllers/CategoriesController');
 const RolesController = require('./controllers/RolesController');
+const { login } = require("./auth");
 
-router.all('/categories', CategoriesController.all);
+async function verifyUser(req, res, next) {
+    try {
+        if (req.session.user != undefined) {
+            next()
+        }
+    } catch (error) {
+        res.send({
+            error: error
+        })
+    }
+}
+router.post('/login', login)
+router.all('/categories', verifyUser, CategoriesController.all);
 router.get('/categories/:id', CategoriesController.all);
 router.all('/roles', RolesController.all);
 router.get('/roles/:id', RolesController.all);
