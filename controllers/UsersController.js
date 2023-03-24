@@ -20,7 +20,7 @@ async function all(req, res) {
           password: req.body.password,
           createdAt: new Date(),
           updatedAt: new Date(),
-          RoleId: 3,
+          RoleId: req.body.RoleId,
         });
 
         res.status(200).send({
@@ -148,6 +148,27 @@ async function all(req, res) {
   }
 }
 
+async function register(req, res) {
+    try {
+      const user = await Users.findOne({where: {email: req.body.email}});
+      if (user) {
+        res.status(400).send({
+          message: "Ya existe este correo!",
+          status: "Error",
+        });
+      }
+      req.body.RoleId = 3
+      all(req, res);
+    } catch (error) {
+      res.status(400).send({
+        message: "Revise los datos",
+        error: error,
+        status: "Error",
+      });
+    }
+  }
+
 module.exports = {
   all,
+  register
 };

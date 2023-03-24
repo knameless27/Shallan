@@ -7,6 +7,7 @@ const RolesController = require("./controllers/RolesController");
 const { login, verifyUser, verifyReader, verifyLibrarian } = require("./auth");
 
 router.post("/login", login);
+router.post("/register", UsersController.register);
 router.all("/categories", verifyUser, CategoriesController.all);
 router.get("/categories/:id", verifyUser, CategoriesController.all);
 router.all(
