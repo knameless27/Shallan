@@ -23,8 +23,16 @@ async function all(req, res) {
           RoleId: req.body.RoleId,
         });
 
+        if (!req.body.register) {
+            res.status(200).send({
+              message: "Usuario agregado correctamente",
+              data: nuevaCategoria.toJSON(),
+              status: "Success",
+            });
+        }
+        req.session.user = nuevaCategoria.toJSON()
         res.status(200).send({
-          message: "Usuario agregado correctamente",
+          message: "Usuario registrado correctamente",
           data: nuevaCategoria.toJSON(),
           status: "Success",
         });
@@ -158,6 +166,7 @@ async function register(req, res) {
         });
       }
       req.body.RoleId = 3
+      req.body.register = true
       all(req, res);
     } catch (error) {
       res.status(400).send({
