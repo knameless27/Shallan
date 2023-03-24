@@ -14,6 +14,77 @@ async function login(req, res, next) {
     }
 }
 
+async function verifyUser(req, res, next) {
+    try {
+        if (req.session.user != undefined) {
+            next()
+        } else {
+            res.status(401).send({
+                message: 'no ha iniciado sesion'
+            })
+        }
+    } catch (error) {
+        res.send({
+            error: error
+        })
+    }
+}
+
+async function verifyReader(req, res, next) {
+    try {
+        if (req.session.user != undefined) {
+            switch (req.session.user.RoleId) {
+                case 3:
+                    res.status(401).send({
+                        message: 'Rol no autorizado'
+                    })
+                    break;
+
+                default:
+                    next()
+                    break;
+            }
+        } else {
+            res.status(401).send({
+                message: 'no ha iniciado sesion'
+            })
+        }
+    } catch (error) {
+        res.send({
+            error: error
+        })
+    }
+}
+
+async function verifyLibrarian(req, res, next) {
+    try {
+        if (req.session.user != undefined) {
+            switch (req.session.user.RoleId) {
+                case 2:
+                    res.status(401).send({
+                        message: 'Rol no autorizado'
+                    })
+                    break;
+
+                default:
+                    verifyReader(req, res, next)
+                    break;
+            }
+        } else {
+            res.status(401).send({
+                message: 'no ha iniciado sesion'
+            })
+        }
+    } catch (error) {
+        res.send({
+            error: error
+        })
+    }
+}
+
 module.exports = {
-    login
+    login,
+    verifyUser,
+    verifyReader,
+    verifyLibrarian
 }

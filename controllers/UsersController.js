@@ -20,7 +20,7 @@ async function all(req, res) {
           password: req.body.password,
           createdAt: new Date(),
           updatedAt: new Date(),
-          RoleId: req.body.RoleId,
+          RoleId: 3,
         });
 
         res.status(200).send({

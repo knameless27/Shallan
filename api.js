@@ -4,29 +4,18 @@ const UsersController = require('./controllers/UsersController');
 const BooksController = require('./controllers/BooksController');
 const CategoriesController = require('./controllers/CategoriesController');
 const RolesController = require('./controllers/RolesController');
-const { login } = require("./auth");
+const { login, verifyUser, verifyReader, verifyLibrarian } = require("./auth");
 
-async function verifyUser(req, res, next) {
-    try {
-        if (req.session.user != undefined) {
-            next()
-        }
-    } catch (error) {
-        res.send({
-            error: error
-        })
-    }
-}
 router.post('/login', login)
 router.all('/categories', verifyUser, CategoriesController.all);
-router.get('/categories/:id', CategoriesController.all);
-router.all('/roles', RolesController.all);
-router.get('/roles/:id', RolesController.all);
-router.all("/books", BooksController.all);
-router.get("/books/:id", BooksController.all);
-router.post("/books/save", BooksController.saveBook);
-router.get("/books/remove_reservation/:id", BooksController.removeReservation);
-router.all("/users", UsersController.all);
-router.get("/users/:id", UsersController.all);
+router.get('/categories/:id', verifyUser, CategoriesController.all);
+router.all('/roles', verifyUser, verifyReader, verifyLibrarian, RolesController.all);
+router.get('/roles/:id', verifyUser, verifyReader, verifyLibrarian, RolesController.all);
+router.all("/books", verifyUser, BooksController.all);
+router.get("/books/:id", verifyUser, BooksController.all);
+router.post("/books/save", verifyUser, BooksController.saveBook);
+router.get("/books/remove_reservation/:id", verifyUser, BooksController.removeReservation);
+router.all("/users", verifyUser, verifyReader, verifyLibrarian, UsersController.all);
+router.get("/users/:id", verifyUser, verifyReader, verifyLibrarian, UsersController.all);
 
 module.exports = router
