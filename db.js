@@ -18,13 +18,13 @@ const sequelize = new Sequelize(
 );
 
 
-// sequelize
-//   .sync({ force: true })
-//   .then(() => {
-//     console.log("Tables and relations created successfully!");
-//   })
-//   .catch((error) => {
-//     console.error("Error occurred while creating tables and relations:", error);
-//   });
+sequelize
+  .sync({ alter: true })
+  .then(() => {
+    console.log("Tables and relations created successfully!");
+  })
+  .catch((error) => {
+    console.error("Error occurred while creating tables and relations:", error);
+  });
 
 module.exports = sequelize;
