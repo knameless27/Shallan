@@ -19,7 +19,7 @@ const sequelize = new Sequelize(
 
 
 sequelize
-  .sync({ alter: true })
+  .sync()
   .then(() => {
     console.log("Tables and relations created successfully!");
   })
