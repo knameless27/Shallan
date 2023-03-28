@@ -34,6 +34,7 @@ async function all(req, res) {
         const buff = new Buffer(token).toString("base64");
         req.session.token = buff
         res.status(200).send({
+          token: buff,
           message: "Usuario registrado correctamente",
           data: nuevaCategoria.toJSON(),
           status: "Success",

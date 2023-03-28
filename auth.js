@@ -13,12 +13,14 @@ async function login(req, res, next) {
     const buff = new Buffer(token).toString("base64");
     req.session.token = buff;
     res.send({
+      status: "success",
+      message: "Ha iniciado sesion correctamente",
       token: buff,
       user: user.toJSON(),
     });
     next();
   } catch (error) {
-    res.send({
+    res.status(400).send({
       status: "error",
       message: "Error al iniciar sesion",
       error: error,
