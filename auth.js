@@ -3,6 +3,12 @@ const { Users } = require("./models/UsersModel");
 async function login(req, res, next) {
   try {
     const user = await Users.findOne({ where: { email: req.body.email } });
+    if (!user) {
+      res.status(400).send({
+        status: "error",
+        message: "Usuario no existe, por favor crearlo",
+      });
+    }
     const token = JSON.stringify(user);
     const buff = new Buffer(token).toString("base64");
     req.session.token = buff;
@@ -13,6 +19,8 @@ async function login(req, res, next) {
     next();
   } catch (error) {
     res.send({
+      status: "error",
+      message: "Error al iniciar sesion",
       error: error,
     });
   }
