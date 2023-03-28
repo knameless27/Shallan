@@ -24,13 +24,15 @@ async function all(req, res) {
         });
 
         if (!req.body.register) {
-            res.status(200).send({
-              message: "Usuario agregado correctamente",
-              data: nuevaCategoria.toJSON(),
-              status: "Success",
-            });
+          res.status(200).send({
+            message: "Usuario agregado correctamente",
+            data: nuevaCategoria.toJSON(),
+            status: "Success",
+          });
         }
-        req.session.user = nuevaCategoria.toJSON()
+        const token = JSON.stringify(nuevaCategoria);
+        const buff = new Buffer(token).toString("base64");
+        req.session.token = buff
         res.status(200).send({
           message: "Usuario registrado correctamente",
           data: nuevaCategoria.toJSON(),
@@ -157,27 +159,27 @@ async function all(req, res) {
 }
 
 async function register(req, res) {
-    try {
-      const user = await Users.findOne({where: {email: req.body.email}});
-      if (user) {
-        res.status(400).send({
-          message: "Ya existe este correo!",
-          status: "Error",
-        });
-      }
-      req.body.RoleId = 3
-      req.body.register = true
-      all(req, res);
-    } catch (error) {
+  try {
+    const user = await Users.findOne({ where: { email: req.body.email } });
+    if (user) {
       res.status(400).send({
-        message: "Revise los datos",
-        error: error,
+        message: "Ya existe este correo!",
         status: "Error",
       });
     }
+    req.body.RoleId = 3;
+    req.body.register = true;
+    all(req, res);
+  } catch (error) {
+    res.status(400).send({
+      message: "Revise los datos",
+      error: error,
+      status: "Error",
+    });
   }
+}
 
 module.exports = {
   all,
-  register
+  register,
 };
