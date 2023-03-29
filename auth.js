@@ -11,7 +11,6 @@ async function login(req, res, next) {
     }
     const token = JSON.stringify(user);
     const buff = new Buffer(token).toString("base64");
-    req.session.token = buff;
     res.send({
       status: "success",
       message: "Ha iniciado sesion correctamente",
@@ -30,7 +29,7 @@ async function login(req, res, next) {
 
 async function verifyUser(req, res, next) {
   try {
-    if (req.session.token != undefined) {
+    if (req.headers.auth != undefined) {
       next();
     } else {
       res.status(401).send({
@@ -46,8 +45,8 @@ async function verifyUser(req, res, next) {
 
 async function verifyReader(req, res, next) {
   try {
-    if (req.session.token != undefined) {
-      const user = new Buffer(req.session.token, "base64");
+    if (req.headers.auth != undefined) {
+      const user = new Buffer(req.headers.auth, "base64");
       const userText = JSON.parse(user.toString("ascii"));
       switch (userText.RoleId) {
         case 3:

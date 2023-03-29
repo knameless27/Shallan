@@ -1,6 +1,8 @@
+const { Users } = require("../models/UsersModel");
 const { Books } = require("../models/BooksModel");
 const { Categories } = require("../models/CategoriesModel");
 const { User_Books } = require("../relationships");
+const { Op } = require("sequelize");
 
 async function all(req, res) {
   switch (req.method) {
@@ -60,7 +62,7 @@ async function all(req, res) {
         }
       }
       try {
-        const categorias = await Books.findAll();
+        const categorias = await Books.findAll({ include: "Category" });
 
         res.status(200).send({
           data: categorias,
@@ -156,10 +158,32 @@ async function all(req, res) {
   }
 }
 
+async function findBook(req, res) {
+  try {
+    const categorias = await Books.findAll({
+      where: { name: { [Op.like]: "%" + req.body.name + "%" } },
+      include: "Category",
+    });
+    console.log(categorias);
+    res.status(200).send({
+      data: categorias,
+      status: "Success",
+    });
+  } catch (error) {
+    res.status(400).send({
+      message: "Revise los datos",
+      error: error,
+      status: "Error",
+    });
+  }
+}
+
 async function saveBook(req, res) {
   try {
     const libro = await Books.findByPk(req.body.bookId);
-    const usuario = await Books.findByPk(req.body.userId);
+    const user = new Buffer(req.headers.auth, "base64");
+    const userText = JSON.parse(user.toString("ascii"));
+    const usuario = await Users.findByPk(userText.id);
 
     if (!libro || !usuario) {
       res.status(400).send({
@@ -168,11 +192,21 @@ async function saveBook(req, res) {
       });
     }
 
+    const reserva = await User_Books.findOne({
+      where: { UserId: usuario.id, BookId: req.body.bookId },
+    });
+    if (reserva) {
+      res.status(200).send({
+        message: "Ya tiene este libro reservado",
+        data: reserva.toJSON(),
+        status: "Warning",
+      });
+    }
     const reservarLibro = await User_Books.create({
       createdAt: new Date(),
       updatedAt: new Date(),
       BookId: req.body.bookId,
-      UserId: req.body.userId,
+      UserId: usuario.id,
     });
 
     res.status(200).send({
@@ -221,4 +255,5 @@ module.exports = {
   all,
   saveBook,
   removeReservation,
+  findBook,
 };

@@ -26,6 +26,7 @@ router.get(
 );
 router.all("/books", verifyUser, BooksController.all);
 router.get("/books/:id", verifyUser, BooksController.all);
+router.post("/search/books", verifyUser, BooksController.findBook);
 router.post("/books/save", verifyUser, BooksController.saveBook);
 router.get(
   "/books/remove_reservation/:id",
