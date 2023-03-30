@@ -1,9 +1,19 @@
 const { Categories } = require("../models/CategoriesModel");
+const { Op } = require("sequelize");
 
 async function all(req, res) {
   switch (req.method) {
     case "POST":
       try {
+        const categoriaAntigua = await Categories.findOne({
+          where: {name: req.body.name},
+        });
+        if (categoriaAntigua) {
+          res.status(400).send({
+            message: "Esa categoria ya existe",
+            status: "Error",
+          });
+        }
         const nuevaCategoria = await Categories.create({
           name: req.body.name,
           state: true,
@@ -88,13 +98,11 @@ async function all(req, res) {
 
     case "DELETE":
       try {
-        await Categories.destroy(
-          {
-            where: {
-              id: req.params.id,
-            },
-          }
-        );
+        await Categories.destroy({
+          where: {
+            id: req.params.id,
+          },
+        });
 
         res.status(200).send({
           message: "Categoria eliminada correctamente",
@@ -118,6 +126,25 @@ async function all(req, res) {
   }
 }
 
+async function findCategory(req, res) {
+  try {
+    const categorias = await Categories.findAll({
+      where: { name: { [Op.like]: "%" + req.body.name + "%" } },
+    });
+    res.status(200).send({
+      data: categorias,
+      status: "Success",
+    });
+  } catch (error) {
+    res.status(400).send({
+      message: "Revise los datos",
+      error: error,
+      status: "Error",
+    });
+  }
+}
+
 module.exports = {
   all,
+  findCategory,
 };

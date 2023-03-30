@@ -10,6 +10,8 @@ router.post("/login", login);
 router.post("/register", UsersController.register);
 router.all("/categories", verifyUser, CategoriesController.all);
 router.get("/categories/:id", verifyUser, CategoriesController.all);
+router.delete("/categories/:id", verifyUser, CategoriesController.all);
+router.post("/search/categories", verifyUser, CategoriesController.findCategory);
 router.all(
   "/roles",
   verifyUser,
@@ -29,10 +31,10 @@ router.get("/books/:id", verifyUser, BooksController.all);
 router.post("/search/books", verifyUser, BooksController.findBook);
 router.post("/books/save", verifyUser, BooksController.saveBook);
 router.get(
-  "/books/remove_reservation/:id",
-  verifyUser,
-  BooksController.removeReservation
-);
+    "/books/remove_reservation/:id",
+    verifyUser,
+    BooksController.removeReservation
+    );
 router.all(
   "/users",
   verifyUser,

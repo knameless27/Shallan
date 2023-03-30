@@ -164,7 +164,6 @@ async function findBook(req, res) {
       where: { name: { [Op.like]: "%" + req.body.name + "%" } },
       include: "Category",
     });
-    console.log(categorias);
     res.status(200).send({
       data: categorias,
       status: "Success",
