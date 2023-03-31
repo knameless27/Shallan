@@ -1,4 +1,5 @@
 const { Roles } = require("../models/RolModel");
+const { Op } = require("sequelize");
 
 async function all(req, res) {
   switch (req.method) {
@@ -23,6 +24,7 @@ async function all(req, res) {
       break;
 
     case "GET":
+        console.log('entra');
       if (req.params.id) {
         try {
           const categorias = await Roles.findByPk(req.params.id);
@@ -40,6 +42,7 @@ async function all(req, res) {
         }
       }
       try {
+        console.log('xd');
         const categorias = await Roles.findAll();
 
         res.status(200).send({
@@ -47,6 +50,7 @@ async function all(req, res) {
           status: "Success",
         });
       } catch (error) {
+        console.log(error);
         res.status(404).send({
           message: "Roles no encontrados",
           error: error,
@@ -57,11 +61,18 @@ async function all(req, res) {
 
     case "PUT":
       try {
+        const catAntigua = await Roles.findByPk(req.params.id);
+        if (catAntigua === null) {
+          res.status(400).send({
+            message: "Rol no encontrado!",
+            status: "Error",
+          });
+        }
         await Roles.update(
           {
             name: req.body.name,
             updatedAd: new Date(),
-            status: req.body.status,
+            state: req.body.status,
           },
           {
             where: {
@@ -95,13 +106,11 @@ async function all(req, res) {
             status: "Error",
           });
         }
-        await Roles.destroy(
-          {
-            where: {
-              id: req.params.id,
-            },
-          }
-        );
+        await Roles.destroy({
+          where: {
+            id: req.params.id,
+          },
+        });
 
         res.status(200).send({
           message: "Rol eliminado correctamente",
@@ -125,6 +134,25 @@ async function all(req, res) {
   }
 }
 
+async function findRoles(req, res) {
+  try {
+    const categorias = await Roles.findAll({
+      where: { name: { [Op.like]: "%" + req.body.name + "%" } },
+    });
+    res.status(200).send({
+      data: categorias,
+      status: "Success",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      message: "Revise los datos",
+      error: error,
+      status: "Error",
+    });
+  }
+}
 module.exports = {
   all,
+  findRoles,
 };

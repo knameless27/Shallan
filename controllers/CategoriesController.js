@@ -71,7 +71,7 @@ async function all(req, res) {
           {
             name: req.body.name,
             updatedAd: new Date(),
-            status: req.body.status,
+            state: req.body.state,
           },
           {
             where: {
