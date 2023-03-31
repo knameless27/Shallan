@@ -75,5 +75,26 @@ router.get(
   verifyLibrarian,
   UsersController.all
 );
+router.put(
+  "/users/:id",
+  verifyUser,
+  verifyReader,
+  verifyLibrarian,
+  UsersController.all
+);
+router.delete(
+  "/users/:id",
+  verifyUser,
+  verifyReader,
+  verifyLibrarian,
+  UsersController.all
+);
+router.post(
+  "/search/users",
+  verifyUser,
+  verifyReader,
+  verifyLibrarian,
+  UsersController.findUsers
+);
 
 module.exports = router;

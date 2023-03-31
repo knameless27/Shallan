@@ -1,5 +1,7 @@
 const { Users } = require("../models/UsersModel");
 const { Roles } = require("../models/RolModel");
+const { Op } = require("sequelize");
+
 async function all(req, res) {
   switch (req.method) {
     case "POST":
@@ -32,7 +34,7 @@ async function all(req, res) {
         }
         const token = JSON.stringify(nuevaCategoria);
         const buff = new Buffer(token).toString("base64");
-        req.session.token = buff
+        req.session.token = buff;
         res.status(200).send({
           token: buff,
           message: "Usuario registrado correctamente",
@@ -66,7 +68,7 @@ async function all(req, res) {
         }
       }
       try {
-        const categorias = await Users.findAll();
+        const categorias = await Users.findAll({include: "Role"});
 
         res.status(200).send({
           data: categorias,
@@ -180,7 +182,28 @@ async function register(req, res) {
   }
 }
 
+async function findUsers(req, res) {
+  try {
+    const categorias = await Users.findAll({
+      where: { email: { [Op.like]: "%" + req.body.name + "%" } },
+      include: "Role"
+    });
+    res.status(200).send({
+      data: categorias,
+      status: "Success",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      message: "Revise los datos",
+      error: error,
+      status: "Error",
+    });
+  }
+}
+
 module.exports = {
   all,
   register,
+  findUsers
 };
