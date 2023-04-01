@@ -54,6 +54,8 @@ router.post(
 );
 router.all("/books", verifyUser, BooksController.all);
 router.get("/books/:id", verifyUser, BooksController.all);
+router.put("/books/:id", verifyUser, BooksController.all);
+router.delete("/books/:id", verifyUser, BooksController.all);
 router.post("/search/books", verifyUser, BooksController.findBook);
 router.post("/books/save", verifyUser, BooksController.saveBook);
 router.get(

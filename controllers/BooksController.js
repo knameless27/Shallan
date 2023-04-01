@@ -79,7 +79,7 @@ async function all(req, res) {
 
     case "PUT":
       try {
-        const catAntigua = await Categories.findByPk(req.body.categoryId);
+        const catAntigua = await Categories.findByPk(req.body.CategoryId);
         if (catAntigua === null) {
           res.status(400).send({
             message: "Categoria no encontrada!",
@@ -96,7 +96,7 @@ async function all(req, res) {
             publication_date: req.body.publication_date,
             stock: req.body.stock,
             updatedAt: new Date(),
-            CategoryId: req.body.categoryId,
+            CategoryId: req.body.CategoryId,
           },
           {
             where: {
@@ -191,6 +191,12 @@ async function saveBook(req, res) {
       });
     }
 
+    if (libro.stock <= 0) {
+      res.status(400).send({
+        message: "No hay mas stock de ese libro!",
+        status: "Error",
+      });
+    }
     const reserva = await User_Books.findOne({
       where: { UserId: usuario.id, BookId: req.body.bookId },
     });
@@ -201,6 +207,24 @@ async function saveBook(req, res) {
         status: "Warning",
       });
     }
+    await Books.update(
+      {
+        name: libro.name,
+        image: libro.image,
+        state: libro.state,
+        author: libro.author,
+        pages: libro.pages,
+        publication_date: libro.publication_date,
+        stock: libro.stock - 1,
+        updatedAt: new Date(),
+        CategoryId: libro.categoryId,
+      },
+      {
+        where: {
+          id: libro.id,
+        },
+      }
+    );
     const reservarLibro = await User_Books.create({
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -231,6 +255,25 @@ async function removeReservation(req, res) {
         status: "Error",
       });
     }
+    const libro = await Books.findByPk(reserva.BookId);
+    await Books.update(
+      {
+        name: libro.name,
+        image: libro.image,
+        state: libro.state,
+        author: libro.author,
+        pages: libro.pages,
+        publication_date: libro.publication_date,
+        stock: libro.stock - 1,
+        updatedAt: new Date(),
+        CategoryId: libro.categoryId,
+      },
+      {
+        where: {
+          id: libro.id,
+        },
+      }
+    );
     await User_Books.destroy({
       where: {
         id: req.params.id,
