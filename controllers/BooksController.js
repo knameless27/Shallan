@@ -177,6 +177,43 @@ async function findBook(req, res) {
   }
 }
 
+async function findReservation(req, res) {
+  try {
+    const user = new Buffer(req.headers.auth, "base64");
+    const userText = JSON.parse(user.toString("ascii"));
+    const usuario = await Users.findByPk(userText.id);
+    const categorias = await Books.findAll({
+      where: { name: { [Op.like]: "%" + req.body.name + "%" } },
+      include: "Category",
+    });
+    let reservas = [],
+      reserva = {};
+      let xd = await User_Books.findAll({where: { UserId: usuario.id}, include: {
+        model: Books,
+        as: 'Books'
+    }});
+    res.send(xd);
+    // categorias.map(async (libro) => {
+    //   // console.log(libro);
+    //   reserva = await User_Books.findAll({
+    //     where: { BookId: libro.id, UserId: usuario.id },
+    //   });
+    //   reserva != null ? reservas.push(reserva) : "";
+    // });
+    // res.status(200).send({
+    //   data: reservas,
+    //   status: "Success",
+    // });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      message: "Revise los datos",
+      error: error,
+      status: "Error",
+    });
+  }
+}
+
 async function saveBook(req, res) {
   try {
     const libro = await Books.findByPk(req.body.bookId);
@@ -197,7 +234,7 @@ async function saveBook(req, res) {
         status: "Error",
       });
     }
-    const reserva = await User_Books.findOne({
+    let reserva = await User_Books.findOne({
       where: { UserId: usuario.id, BookId: req.body.bookId },
     });
     if (reserva) {
@@ -207,6 +244,37 @@ async function saveBook(req, res) {
         status: "Warning",
       });
     }
+    let reservaAntigua = await User_Books.restore({
+      where: {
+        UserId: usuario.id,
+        BookId: req.body.bookId,
+      },
+    });
+    if (reservaAntigua) {
+      await Books.update(
+        {
+          name: libro.name,
+          image: libro.image,
+          state: libro.state,
+          author: libro.author,
+          pages: libro.pages,
+          publication_date: libro.publication_date,
+          stock: libro.stock - 1,
+          updatedAt: new Date(),
+          CategoryId: libro.categoryId,
+        },
+        {
+          where: {
+            id: libro.id,
+          },
+        }
+      );
+      res.status(200).send({
+        message: "Libro agregado correctamente",
+        status: "Success",
+      });
+    }
+    res.send(200);
     await Books.update(
       {
         name: libro.name,
@@ -248,7 +316,12 @@ async function saveBook(req, res) {
 
 async function removeReservation(req, res) {
   try {
-    const reserva = await User_Books.findByPk(req.params.id);
+    const user = new Buffer(req.headers.auth, "base64");
+    const userText = JSON.parse(user.toString("ascii"));
+    const usuario = await Users.findByPk(userText.id);
+    const reserva = await User_Books.findOne({
+      where: { BookId: Number(req.params.id), UserId: usuario.id },
+    });
     if (reserva === null) {
       res.status(400).send({
         message: "Reserva no encontrada!",
@@ -264,7 +337,7 @@ async function removeReservation(req, res) {
         author: libro.author,
         pages: libro.pages,
         publication_date: libro.publication_date,
-        stock: libro.stock - 1,
+        stock: libro.stock + 1,
         updatedAt: new Date(),
         CategoryId: libro.categoryId,
       },
@@ -276,7 +349,7 @@ async function removeReservation(req, res) {
     );
     await User_Books.destroy({
       where: {
-        id: req.params.id,
+        id: reserva.id,
       },
     });
 
@@ -298,4 +371,5 @@ module.exports = {
   saveBook,
   removeReservation,
   findBook,
+  findReservation,
 };

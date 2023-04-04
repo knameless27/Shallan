@@ -63,6 +63,7 @@ router.get(
   verifyUser,
   BooksController.removeReservation
 );
+router.post("/search/reservations", verifyUser, BooksController.findReservation);
 router.all(
   "/users",
   verifyUser,
