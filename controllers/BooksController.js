@@ -177,6 +177,34 @@ async function findBook(req, res) {
   }
 }
 
+async function showReservations(req, res) {
+  try {
+    const user = new Buffer(req.headers.auth, "base64");
+    const userText = JSON.parse(user.toString("ascii"));
+    const usuario = await Users.findByPk(userText.id);
+
+    let userWithBooks = await Users.findAll({
+      include: {
+        model: Books,
+        include: {
+          model: Categories,
+        },
+      },
+      where: { id: usuario.id },
+    });
+    res.status(200).send({
+      data: userWithBooks,
+      status: "Success",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      message: "Revise los datos",
+      error: error,
+      status: "Error",
+    });
+  }
+}
 async function findReservation(req, res) {
   try {
     const user = new Buffer(req.headers.auth, "base64");
@@ -184,26 +212,20 @@ async function findReservation(req, res) {
     const usuario = await Users.findByPk(userText.id);
     const categorias = await Books.findAll({
       where: { name: { [Op.like]: "%" + req.body.name + "%" } },
-      include: "Category",
+      include: [
+        Categories,
+        {
+          model: Users,
+          where: {
+            id: usuario.id,
+          },
+        },
+      ],
     });
-    let reservas = [],
-      reserva = {};
-      let xd = await User_Books.findAll({where: { UserId: usuario.id}, include: {
-        model: Books,
-        as: 'Books'
-    }});
-    res.send(xd);
-    // categorias.map(async (libro) => {
-    //   // console.log(libro);
-    //   reserva = await User_Books.findAll({
-    //     where: { BookId: libro.id, UserId: usuario.id },
-    //   });
-    //   reserva != null ? reservas.push(reserva) : "";
-    // });
-    // res.status(200).send({
-    //   data: reservas,
-    //   status: "Success",
-    // });
+    res.status(200).send({
+      data: categorias,
+      status: "Success",
+    });
   } catch (error) {
     console.log(error);
     res.status(400).send({
@@ -372,4 +394,5 @@ module.exports = {
   removeReservation,
   findBook,
   findReservation,
+  showReservations,
 };
