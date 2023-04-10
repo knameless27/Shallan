@@ -1,6 +1,8 @@
 const { Users } = require("../models/UsersModel");
 const { Roles } = require("../models/RolModel");
 const { Op } = require("sequelize");
+const { Books } = require("../models/BooksModel");
+const { Categories } = require("../models/CategoriesModel");
 
 async function all(req, res) {
   switch (req.method) {
@@ -68,7 +70,7 @@ async function all(req, res) {
         }
       }
       try {
-        const categorias = await Users.findAll({include: "Role"});
+        const categorias = await Users.findAll({ include: "Role" });
 
         res.status(200).send({
           data: categorias,
@@ -186,7 +188,7 @@ async function findUsers(req, res) {
   try {
     const categorias = await Users.findAll({
       where: { email: { [Op.like]: "%" + req.body.name + "%" } },
-      include: "Role"
+      include: "Role",
     });
     res.status(200).send({
       data: categorias,
@@ -203,28 +205,33 @@ async function findUsers(req, res) {
 }
 
 async function myProfile(req, res) {
-    try {
-      const user = new Buffer(req.headers.auth, "base64");
-      const userText = JSON.parse(user.toString("ascii"));
-      const usuario = await Users.findByPk(userText.id);
-      res.status(200).send({
-        data: usuario,
-        status: "Success",
-      });
-    } catch (error) {
-      console.log(error);
-      res.status(400).send({
-        message: "Revise los datos",
-        error: error,
-        status: "Error",
-      });
-    }
+  try {
+    const user = new Buffer(req.headers.auth, "base64");
+    const userText = JSON.parse(user.toString("ascii"));
+    const usuario = await Users.findOne({
+        where: { id: userText.id },
+        include: [{
+            model: Books,
+            include: Categories
+        }, Roles]
+     });
+    res.status(200).send({
+      data: usuario,
+      status: "Success",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      message: "Revise los datos",
+      error: error,
+      status: "Error",
+    });
   }
-
+}
 
 module.exports = {
   all,
   register,
   findUsers,
-  myProfile
+  myProfile,
 };
