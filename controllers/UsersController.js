@@ -202,8 +202,29 @@ async function findUsers(req, res) {
   }
 }
 
+async function myProfile(req, res) {
+    try {
+      const user = new Buffer(req.headers.auth, "base64");
+      const userText = JSON.parse(user.toString("ascii"));
+      const usuario = await Users.findByPk(userText.id);
+      res.status(200).send({
+        data: usuario,
+        status: "Success",
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send({
+        message: "Revise los datos",
+        error: error,
+        status: "Error",
+      });
+    }
+  }
+
+
 module.exports = {
   all,
   register,
-  findUsers
+  findUsers,
+  myProfile
 };

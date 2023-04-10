@@ -79,6 +79,10 @@ router.get(
   verifyLibrarian,
   UsersController.all
 );
+router.get(
+  "/my_profile",
+  UsersController.myProfile
+);
 router.put(
   "/users/:id",
   verifyUser,
